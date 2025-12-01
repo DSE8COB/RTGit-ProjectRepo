@@ -74,7 +74,8 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     print("Repo:", chkrepo)
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
-        FILEPATH = "Security Risk Analysis Document/Security Risk Analysis Document.md"
+        FILEPATH = f"{filename}/{filename}.md"
+        ENCODEDFILEPATH = f"{encoded_filename}/{encoded_filename}.md"
         # Step 1 — Get the latest commit affecting this file
         commits_url = f"https://api.github.com/repos/{chkowner}/{chkrepo}/commits"
         params = {"path": FILEPATH, "per_page": 1}
@@ -87,7 +88,7 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
         # Step 2 — Build versioned raw URL for this commit
         file_url = (
             f"https://raw.githubusercontent.com/{chkowner}/{chkrepo}/"
-            f"{latest_commit_sha}/{FILEPATH}"
+            f"{latest_commit_sha}/{ENCODEDFILEPATH}"
         )
         file_content = file_url
         decoded_content = file_content
