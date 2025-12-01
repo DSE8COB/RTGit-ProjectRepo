@@ -5,81 +5,28 @@ on:
     types: [opened, reopened]
 
 jobs:
-  create-task-list:
+  handle-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Extract and Format Tags as List
-        id: format-tags
-        run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          TAG_LIST=$(echo $PR_TITLE | sed -n 's/.*RTImport-\(.*\)-RTChk.*/\1/p' | sed 's/, /,/g')
-          TAG_LIST=$(echo $TAG_LIST | tr ',' '\n' | sed 's/^ *//;s/ *$//' | tr '\n' ',')
-          TAG_LIST=${TAG_LIST%,}  # Remove trailing comma
-          echo "TAG_LIST: [$TAG_LIST]"
-          echo "::set-output name=tag_list::[$TAG_LIST]"
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-      - name: Fetch Tags File from Specific Repo
-        id: fetch-tags-file
+      - name: Install dependencies
         run: |
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/DSE8COB/RTGit-CommonChecklistRepo/contents/tags.txt" | \
-            jq -r '.content' | base64 --decode > tags.txt
-          echo "tags.txt content:"
-          cat tags.txt
+          python -m pip install --upgrade pip
+          pip install requests PyYAML
 
-      - name: Determine Task Files from Tags
-        id: determine-task-files
+      - name: Run PR Handling Script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG_LIST=${{ steps.format-tags.outputs.tag_list }}
-          echo "TAG_LIST: $TAG_LIST"
-          TAG_LIST=$(echo $TAG_LIST | sed 's/\[//;s/\]//;s/,/ /g')
-          declare -A FILE_SET
-          while IFS='-' read -r TAG_NAME FILES; do
-            TAG_NAME=$(echo "$TAG_NAME" | xargs) # Trim leading and trailing spaces
-            echo "Processing tag: $TAG_NAME with files: $FILES"
-            for tag in $TAG_LIST; do
-              if [ "$tag" == "$TAG_NAME" ]; then
-                echo "Tag $TAG_NAME found in TAG_LIST"
-                IFS=',' read -r -a file_array <<< "$FILES"
-                for file in "${file_array[@]}"; do
-                  # Only trim leading and trailing spaces from each individual file name
-                  file=$(echo "$file" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-                  FILE_SET["$file"]=1
-                  echo "Added file: '$file' to FILE_SET"
-                done
-              fi
-            done
-          done < tags.txt
-          FILES_LIST=$(IFS=,; echo "${!FILE_SET[*]}")
-          echo "Unique task files: $FILES_LIST"
-          echo "::set-output name=files_list::$FILES_LIST"
-
-      - name: Decode and Comment for Each File
-        run: |
-          FILES_LIST="${{ steps.determine-task-files.outputs.files_list }}"
-          IFS=',' read -r -a files <<< "$FILES_LIST"
-          for FILENAME in "${files[@]}"; do
-            ENCODED_FILENAME=$(jq -nr --arg fname "$FILENAME" '$fname|@uri')
-            echo "Processing file: $FILENAME (Encoded: $ENCODED_FILENAME)"
-      
-            # Fetch and decode the file content
-            file_content=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/DSE8COB/RTGit-CommonChecklistRepo/contents/${ENCODED_FILENAME}/${ENCODED_FILENAME}.md") 
-            ENCODED_CONTENT=$(echo "$file_content" | jq -r '.content')
-            DECODED_CONTENT=$(echo "$ENCODED_CONTENT" | base64 --decode) 
-            echo "$DECODED_CONTENT" > decoded_content.txt
-            github_token="${{ secrets.GITHUB_TOKEN }}"
-            repo="${{ github.repository }}"
-            pr_number="${{ github.event.pull_request.number }}"
-            comment_body=$(<decoded_content.txt)
-            json_payload=$(jq -n --arg body "$comment_body" '{"body": $body}')
-      
-            curl -s -H "Authorization: token $github_token" \
-              -H "Content-Type: application/json" \
-              -X POST -d "$json_payload" \
-              "https://api.github.com/repos/$repo/issues/$pr_number/comments"
-          done
-        shell: bash
+          python script/addChecklistToPR.py "${{ github.event.pull_request.title }}" \
+                                            "${{ github.repository }}" \
+                                            "${{ github.event.pull_request.number }}" \
+                                            "https://api.github.com/repos/DSE8COB/RTGit-CommonChecklistRepo/contents" \
+                                            "${{ secrets.GITHUB_TOKEN }}"
