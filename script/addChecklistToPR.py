@@ -63,7 +63,7 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     tags_file_content = fetch_tags_file(token, file_base_url)
     task_files = determine_task_files(tags, tags_file_content)
     # Parse the URL path
-    parsed = urlparse(url)
+    parsed = urlparse(file_base_url)
     path_parts = parsed.path.strip("/").split("/")
     
     # GitHub API repo URL format: /repos/{owner}/{repo}/...
