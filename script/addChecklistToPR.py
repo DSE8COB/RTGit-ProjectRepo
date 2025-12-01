@@ -79,6 +79,8 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
         commits_url = f"https://api.github.com/repos/{chkowner}/{chkrepo}/commits"
         params = {"path": FILEPATH, "per_page": 1}
         headers = {"Authorization": f"token {token}"}
+        print(commits_url)
+        print(params)
         commit_resp = requests.get(commits_url, params=params, headers=headers)
         print("jinga")
         print(commit_resp.json())
