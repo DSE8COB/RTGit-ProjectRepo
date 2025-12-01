@@ -74,7 +74,7 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     print("Repo:", chkrepo)
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
-        FILEPATH = f"{encoded_filename}/{encoded_filename}.md"
+        FILEPATH = "Security Risk Analysis Document/Security Risk Analysis Document.md"
         # Step 1 — Get the latest commit affecting this file
         commits_url = f"https://api.github.com/repos/{chkowner}/{chkrepo}/commits"
         params = {"path": FILEPATH, "per_page": 1}
