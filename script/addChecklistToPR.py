@@ -5,6 +5,7 @@ import json
 import sys
 import argparse
 from typing import List
+from urllib.parse import urlparse
 
 def get_github_token(token: str):
     if not token:
@@ -61,12 +62,21 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     tags = extract_and_format_tags(pr_title)
     tags_file_content = fetch_tags_file(token, file_base_url)
     task_files = determine_task_files(tags, tags_file_content)
-    print(repo)
+    # Parse the URL path
+    parsed = urlparse(url)
+    path_parts = parsed.path.strip("/").split("/")
+    
+    # GitHub API repo URL format: /repos/{owner}/{repo}/...
+    chkowner = path_parts[1]
+    chkrepo = path_parts[2]
+    
+    print("Owner:", chkowner)
+    print("Repo:", chkrepo)
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
         FILEPATH = f"{encoded_filename}/{encoded_filename}.md"
         # Step 1 — Get the latest commit affecting this file
-        commits_url = f"https://api.github.com/repos/{repo}/commits"
+        commits_url = f"https://api.github.com/repos/{chkowner}/{chkrepo}/commits"
         params = {"path": FILEPATH, "per_page": 1}
         headers = {"Authorization": f"token {token}"}
         commit_resp = requests.get(commits_url, params=params, headers=headers)
@@ -77,7 +87,7 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
         
         # Step 2 — Build versioned raw URL for this commit
         file_url = (
-            f"https://raw.githubusercontent.com/{OWNER}/{REPO}/"
+            f"https://raw.githubusercontent.com/{chkowner}/{chkrepo}/"
             f"{latest_commit_sha}/{FILEPATH}"
         )
         file_content = file_url
