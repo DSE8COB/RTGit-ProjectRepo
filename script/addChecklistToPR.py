@@ -70,7 +70,9 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
         params = {"path": FILEPATH, "per_page": 1}
         headers = {"Authorization": f"token {token}"}
         commit_resp = requests.get(commits_url, params=params, headers=headers)
-        
+        print("jinga")
+        print(commit_resp)
+        print("lala")
         latest_commit_sha = commit_resp[0]["sha"]
         
         # Step 2 — Build versioned raw URL for this commit
