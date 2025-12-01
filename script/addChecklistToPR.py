@@ -84,9 +84,8 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
         }
         print(commits_url)
         print(params)
-        commit_resp = requests.get(commits_url, params=params, headers=headers)
+        commit_resp = requests.get(commits_url, params=params, headers=headers).json()
         print("jinga")
-        print(commit_resp.json())
         print("lala")
         latest_commit_sha = commit_resp[0]["sha"]
         
