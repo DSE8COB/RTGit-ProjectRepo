@@ -43,6 +43,7 @@ def determine_task_files(tags: List[str], tags_file_content: str) -> List[str]:
     return list(file_set)
 
 def post_comment_to_pr(token: str, repo: str, pr_number: int, content: str):
+    print(repo)
     url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
     headers = {
         'Authorization': f'token {token}',
