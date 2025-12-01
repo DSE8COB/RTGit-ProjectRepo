@@ -61,7 +61,7 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     tags = extract_and_format_tags(pr_title)
     tags_file_content = fetch_tags_file(token, file_base_url)
     task_files = determine_task_files(tags, tags_file_content)
-    
+    print(repo)
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
         FILEPATH = f"{encoded_filename}/{encoded_filename}.md"
