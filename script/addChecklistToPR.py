@@ -64,13 +64,21 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
         file_url = f"{file_base_url}/{encoded_filename}/{encoded_filename}.md"
-        headers = {'Authorization': f'token {token}'}
-        response = requests.get(file_url, headers=headers)
-        if response.status_code != 200:
-            print(f"Failed to fetch file {filename}")
-            continue
-        file_content = response.json()['content']
-        decoded_content = base64.b64decode(file_content).decode('utf-8')
+        # Step 1 — Get the latest commit affecting this file
+        commits_url = f"https://api.github.com/repos/{repo}/commits"
+        params = {"path": FILEPATH, "per_page": 1}
+        
+        commit_resp = requests.get(commits_url, params=params).json()
+        
+        latest_commit_sha = commit_resp[0]["sha"]
+        
+        # Step 2 — Build versioned raw URL for this commit
+        file_url = (
+            f"https://raw.githubusercontent.com/{OWNER}/{REPO}/"
+            f"{latest_commit_sha}/{FILEPATH}"
+        )
+        file_content = file_url
+        decoded_content = file_content
         post_comment_to_pr(token, repo, pr_number, decoded_content)
 
 if __name__ == "__main__":
