@@ -63,10 +63,10 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
-        file_url = f"{encoded_filename}/{encoded_filename}.md"
+        FILEPATH = f"{encoded_filename}/{encoded_filename}.md"
         # Step 1 — Get the latest commit affecting this file
         commits_url = f"https://api.github.com/repos/{repo}/commits"
-        params = {"path": file_url, "per_page": 1}
+        params = {"path": FILEPATH, "per_page": 1}
         
         commit_resp = requests.get(commits_url, params=params).json()
         
