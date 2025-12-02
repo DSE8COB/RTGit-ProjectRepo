@@ -60,6 +60,8 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, added_fil
     tags = extract_and_format_tags(pr_title)
     tags_file_content = fetch_tags_file(token, file_base_url)
     task_files = determine_task_files(tags, tags_file_content)
+    print(added_files_str)
+    print(modified_files_data)
     added_files_data = process_files(added_files_str)
     modified_files_data = process_files(modified_files_str)
     for filename in task_files:
