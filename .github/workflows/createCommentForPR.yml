@@ -39,6 +39,11 @@ jobs:
 
           echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_OUTPUT
           echo "MODIFIED_FILES=$MODIFIED_FILES" >> $GITHUB_OUTPUT
+          
+      - name: Debug file lists
+        run: |
+          echo "Added Files: ${{ steps.prepare-lists.outputs.ADDED_FILES }}"
+          echo "Modified Files: ${{ steps.prepare-lists.outputs.MODIFIED_FILES }}"
 
       - name: Install dependencies
         run: |
