@@ -8,13 +8,42 @@ jobs:
   handle-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Important for git diff to work correctly
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44 # Using a dedicated action for simplicity
+        with:
+          files: '*' # Check all files
+
+      - name: Prepare file lists for Python
+        id: prepare-lists
+        run: |
+          ADDED_FILES=""
+          MODIFIED_FILES=""
+
+          for file in ${{ steps.changed-files.outputs.added_files }}; do
+            ADDED_FILES+="${file} "
+          done
+
+          for file in ${{ steps.changed-files.outputs.modified_files }}; do
+            MODIFIED_FILES+="${file} "
+          done
+
+          echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_OUTPUT
+          echo "MODIFIED_FILES=$MODIFIED_FILES" >> $GITHUB_OUTPUT
+          
+      - name: Debug file lists
+        run: |
+          echo "Added Files: ${{ steps.prepare-lists.outputs.ADDED_FILES }}"
+          echo "Modified Files: ${{ steps.prepare-lists.outputs.MODIFIED_FILES }}"
 
       - name: Install dependencies
         run: |
@@ -29,4 +58,6 @@ jobs:
                                             "${{ github.repository }}" \
                                             "${{ github.event.pull_request.number }}" \
                                             "https://api.github.com/repos/DSE8COB/RTGit-CommonChecklistRepo/contents" \
+                                            "${{ steps.prepare-lists.outputs.ADDED_FILES }}" \
+                                            "${{ steps.prepare-lists.outputs.MODIFIED_FILES }}" \
                                             "${{ secrets.GITHUB_TOKEN }}"
