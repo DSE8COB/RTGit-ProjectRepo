@@ -5,7 +5,6 @@ import json
 import sys
 import argparse
 from typing import List
-from urllib.parse import urlparse
 
 def get_github_token(token: str):
     if not token:
@@ -44,7 +43,6 @@ def determine_task_files(tags: List[str], tags_file_content: str) -> List[str]:
     return list(file_set)
 
 def post_comment_to_pr(token: str, repo: str, pr_number: int, content: str):
-    print(repo)
     url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
     headers = {
         'Authorization': f'token {token}',
@@ -62,36 +60,17 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     tags = extract_and_format_tags(pr_title)
     tags_file_content = fetch_tags_file(token, file_base_url)
     task_files = determine_task_files(tags, tags_file_content)
-    # Parse the URL path
-    parsed = urlparse(file_base_url)
-    path_parts = parsed.path.strip("/").split("/")
     
-    # GitHub API repo URL format: /repos/{owner}/{repo}/...
-    chkowner = path_parts[1]
-    chkrepo = path_parts[2]
-    
-    print("Owner:", chkowner)
-    print("Repo:", chkrepo)
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
-        FILEPATH = f"{filename}/{filename}.md"
-        ENCODEDFILEPATH = f"{encoded_filename}/{encoded_filename}.md"
-        # Step 1 — Get the latest commit affecting this file
-        commits_url = f"https://api.github.com/repos/{chkowner}/{chkrepo}/commits"
-        params = {"path": FILEPATH, "per_page": 1}
+        file_url = f"{file_base_url}/{encoded_filename}/{encoded_filename}.md"
         headers = {'Authorization': f'token {token}'}
-        print(commits_url)
-        print(params)
-        commit_resp = requests.get(commits_url, params=params, headers=headers).json()
-        latest_commit_sha = commit_resp[0]["sha"]
-        
-        # Step 2 — Build versioned raw URL for this commit
-        file_url = (
-            f"https://raw.githubusercontent.com/{chkowner}/{chkrepo}/"
-            f"{latest_commit_sha}/{ENCODEDFILEPATH}"
-        )
-        file_content = file_url
-        decoded_content = file_content
+        response = requests.get(file_url, headers=headers)
+        if response.status_code != 200:
+            print(f"Failed to fetch file {filename}")
+            continue
+        file_content = response.json()['content']
+        decoded_content = base64.b64decode(file_content).decode('utf-8')
         post_comment_to_pr(token, repo, pr_number, decoded_content)
 
 if __name__ == "__main__":
