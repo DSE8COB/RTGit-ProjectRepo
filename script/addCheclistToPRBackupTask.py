@@ -63,7 +63,7 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
     
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
-        file_url = f"{file_base_url}/{encoded_filename}/_metadata/_metadata.txt"
+        file_url = f"{file_base_url}/{encoded_filename}/{encoded_filename}.md"
         headers = {'Authorization': f'token {token}'}
         response = requests.get(file_url, headers=headers)
         if response.status_code != 200:
