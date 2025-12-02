@@ -80,6 +80,8 @@ if __name__ == "__main__":
     parser.add_argument('pr_number', type=int, help='Pull Request number')
     parser.add_argument('file_base_url', type=str, help='Base URL for fetching files')
     parser.add_argument('token', type=str, help='GitHub Token')
+    parser.add_argument('token', type=str, help='GitHub Token')
+    parser.add_argument('token', type=str, help='GitHub Token')
 
     args = parser.parse_args()
     main(args.pr_title, args.repo, args.pr_number, args.file_base_url, args.token)
