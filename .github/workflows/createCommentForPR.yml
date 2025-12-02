@@ -38,7 +38,7 @@ jobs:
           done
 
           echo "ADDED_FILES=$ADDED_FILES" >> $GITHUB_OUTPUT
-          echo "MODIFIED_FILES=$MODIFIED_OUTPUT" >> $GITHUB_OUTPUT
+          echo "MODIFIED_FILES=$MODIFIED_FILES" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: |
