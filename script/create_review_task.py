@@ -13,15 +13,19 @@ def add_comment(repo, pr_number, github_token, message):
     url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
 
     headers = {
-        "Authorization": f"Bearer {github_token}",
-        "Accept": "application/vnd.github+json"
+        "Authorization": f"token {github_token}",
+        "Content-Type": "application/json"
     }
 
-    requests.post(
+    response = requests.post(
         url,
         headers=headers,
         json={"body": message}
-    ).raise_for_status()
+    )
+
+    if response.status_code != 201:
+        print(f"Failed to add PR comment: {response.status_code}")
+        print(response.text)
 
 
 def main():
@@ -76,6 +80,9 @@ def main():
         ]
     }
 
+    print("Payload:")
+    print(json.dumps(payload, indent=2))
+
     try:
 
         response = requests.post(
@@ -86,6 +93,9 @@ def main():
             },
             timeout=60
         )
+
+        print("Status Code:", response.status_code)
+        print("Response:", response.text)
 
         response.raise_for_status()
 
@@ -104,9 +114,10 @@ def main():
 
         else:
 
-            error = result.get(
-                "returnErrorMsg",
-                result.get("returnMsg", "Unknown error")
+            error = (
+                result.get("returnErrorMsg")
+                or result.get("returnMsg")
+                or "Unknown Error"
             )
 
             add_comment(
@@ -124,6 +135,8 @@ def main():
             github_token,
             f"❌ Review task creation failed.\n\n{str(ex)}"
         )
+
+        raise
 
 
 if __name__ == "__main__":
