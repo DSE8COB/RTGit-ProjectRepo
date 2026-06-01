@@ -1,0 +1,32 @@
+name: Create Review Task
+
+on:
+  pull_request:
+    types:
+      - opened
+      - review_requested
+
+jobs:
+  create-review-task:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Execute Script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python create_review_task.py \
+            '${{ toJson(github.event.pull_request) }}' \
+            '${{ github.repository }}' \
+            '${{ github.event.pull_request.number }}'
