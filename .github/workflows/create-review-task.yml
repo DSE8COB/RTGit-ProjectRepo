@@ -5,6 +5,7 @@ on:
     types:
       - opened
       - review_requested
+      - reopened
 
 jobs:
   create-review-task:
