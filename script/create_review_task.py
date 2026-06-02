@@ -4,8 +4,8 @@ import sys
 import requests
 
 CREATE_REVIEW_URL = (
-    "https://rb-bbm-rtool-t0-dev-fw-gway.apps.intranet.bosch.com"
-    "/createReview/task/bbm/14"
+    "https://ews-emea.api.bosch.com"
+    "/reviewtool/create-task/d/v1/createReview/task/bbm/14"
 )
 
 
@@ -89,7 +89,8 @@ def main():
             CREATE_REVIEW_URL,
             json=payload,
             headers={
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "KeyId": "9bc39618-a714-4d87-aa6a-c4fd4985d9ba"
             },
             timeout=60
         )
