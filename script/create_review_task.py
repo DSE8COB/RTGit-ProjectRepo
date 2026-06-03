@@ -102,7 +102,7 @@ def main():
 
         result = response.json()
 
-        if result.get("returnId") == 1:
+        if result.get("returnId") in (1, 2):
 
             task_id = result.get("taskIdStr", "")
 
