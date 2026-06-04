@@ -1,11 +1,7 @@
 name: Create Review Task
 
 on:
-  pull_request:
-    types:
-      - opened
-      - review_requested
-      - reopened
+  workflow_dispatch:
 
 jobs:
   create-review-task:
