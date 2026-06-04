@@ -1,8 +1,7 @@
 name: Create Task List from PR Tags
 
 on:
-  pull_request:
-    types: [opened, reopened]
+  workflow_dispatch:
 
 jobs:
   handle-pr:
