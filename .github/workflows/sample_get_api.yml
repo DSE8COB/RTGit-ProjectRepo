@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  create-review-task:
+  task-validation-job:
     runs-on: ubuntu-latest
 
     permissions:
