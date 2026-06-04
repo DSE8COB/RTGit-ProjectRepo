@@ -8,6 +8,7 @@ CREATE_REVIEW_URL = (
     "/reviewtool/create-task/t/v1/createReview/task/external/bbm/14"
 )
 
+
 def get_public_email(username, github_token):
     try:
         response = requests.get(
@@ -23,11 +24,16 @@ def get_public_email(username, github_token):
 
         user = response.json()
 
+        print(f"\n===== GitHub User Data for {username} =====")
+        print(json.dumps(user, indent=2))
+        print("==========================================\n")
+
         return user.get("email")
 
     except Exception as ex:
         print(f"Unable to fetch email for {username}: {str(ex)}")
         return None
+
 
 def add_comment(repo, pr_number, github_token, message):
     url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
@@ -61,33 +67,33 @@ def main():
 
     author = pr["user"]["login"]
 
-author_email = get_public_email(
-    author,
-    github_token
-)
+    author_email = get_public_email(
+        author,
+        github_token
+    )
 
-print(f"Author Login : {author}")
-print(f"Author Email : {author_email}")
+    print(f"Author Login : {author}")
+    print(f"Author Email : {author_email}")
 
     reviewers = []
 
     for reviewer in pr.get("requested_reviewers", []):
 
-    reviewer_login = reviewer["login"]
+        reviewer_login = reviewer["login"]
 
-    reviewer_email = get_public_email(
-        reviewer_login,
-        github_token
-    )
+        reviewer_email = get_public_email(
+            reviewer_login,
+            github_token
+        )
 
-    print(f"Reviewer Login : {reviewer_login}")
-    print(f"Reviewer Email : {reviewer_email}")
+        print(f"Reviewer Login : {reviewer_login}")
+        print(f"Reviewer Email : {reviewer_email}")
 
-    reviewers.append({
-        "reviewerSubRole": "Approver",
-        "userNTID": reviewer_login,
-        "emailId": reviewer_email
-    })
+        reviewers.append({
+            "reviewerSubRole": "Approver",
+            "userNTID": reviewer_login,
+            "emailId": reviewer_email
+        })
 
     if len(reviewers) == 0:
         add_comment(
