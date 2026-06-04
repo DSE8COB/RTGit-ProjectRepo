@@ -1,11 +1,10 @@
 name: Get Call For Testing
 
 on:
+  push:
+    branches: [main]
   pull_request:
-    types:
-      - opened
-      - review_requested
-      - reopened
+    branches: [main]
 
 jobs:
   create-review-task:
