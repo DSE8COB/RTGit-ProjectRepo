@@ -1,4 +1,4 @@
-name: Get Call For Testing
+name: Task Validation Testing
 
 on:
   push:
