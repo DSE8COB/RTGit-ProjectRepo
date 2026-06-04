@@ -7,6 +7,7 @@ on:
     types:
       - opened
       - reopened
+      - review_requested
       - synchronize
 
 jobs:
