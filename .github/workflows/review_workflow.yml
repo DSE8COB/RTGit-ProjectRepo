@@ -58,16 +58,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
-      - run: pip install requests
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
 
-      - name: Run validation
-        run: python check_review_api.py "${{ needs.detect-task.outputs.task_id }}"
+      - name: Execute Script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python script/task_validation.py \
+            '${{ toJson(github.event.pull_request) }}' \
+            '${{ github.repository }}' \
+            '${{ github.event.pull_request.number }}'
 
   create-review-task:
     name: Create Review Task
@@ -76,7 +87,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Create task
-        run: echo "No task found in current PR comments, create task here"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Execute Script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python script/create_review_task.py \
+            '${{ toJson(github.event.pull_request) }}' \
+            '${{ github.repository }}' \
+            '${{ github.event.pull_request.number }}'
