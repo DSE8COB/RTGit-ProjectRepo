@@ -55,12 +55,15 @@ def post_comment_to_pr(token: str, repo: str, pr_number: int, content: str):
         print(response.json())
         sys.exit(1)
 
-def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: str):
+def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, added_files_str: str, modified_files_str: str, token: str):
     token = get_github_token(token)
     tags = extract_and_format_tags(pr_title)
     tags_file_content = fetch_tags_file(token, file_base_url)
     task_files = determine_task_files(tags, tags_file_content)
-    
+    print(added_files_str)
+    print(modified_files_str)
+    added_files_data = process_files(added_files_str)
+    modified_files_data = process_files(modified_files_str)
     for filename in task_files:
         encoded_filename = requests.utils.quote(filename)
         file_url = f"{file_base_url}/{encoded_filename}/{encoded_filename}.md"
@@ -71,7 +74,30 @@ def main(pr_title: str, repo: str, pr_number: int, file_base_url: str, token: st
             continue
         file_content = response.json()['content']
         decoded_content = base64.b64decode(file_content).decode('utf-8')
+        print("Added Files:")
+        decoded_content+= "\n"
+        for file_info in added_files_data:
+            decoded_content += f"  Path: {file_info['path']}, Name: {file_info['name']}, Extension: {file_info['extension']}"
+
+        print("\nModified Files:")
+        for file_info in modified_files_data:
+             decoded_content += f"  Path: {file_info['path']}, Name: {file_info['name']}, Extension: {file_info['extension']}"
+
         post_comment_to_pr(token, repo, pr_number, decoded_content)
+
+def process_files(file_list_str):
+    """Processes a space-separated string of file paths."""
+    if not file_list_str:
+        return []
+    
+    files = file_list_str.split()
+    processed_data = []
+    for file_path in files:
+        filename = os.path.basename(file_path)
+        name, ext = os.path.splitext(filename)
+        processed_data.append({"path": file_path, "name": name, "extension": ext})
+    return processed_data
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process PR details.')
@@ -79,7 +105,9 @@ if __name__ == "__main__":
     parser.add_argument('repo', type=str, help='Repository name')
     parser.add_argument('pr_number', type=int, help='Pull Request number')
     parser.add_argument('file_base_url', type=str, help='Base URL for fetching files')
+    parser.add_argument('added_files_str', type=str, help='added Files list', default="")
+    parser.add_argument('modified_files_str', type=str, help='modified Files list', default="")
     parser.add_argument('token', type=str, help='GitHub Token')
 
     args = parser.parse_args()
-    main(args.pr_title, args.repo, args.pr_number, args.file_base_url, args.token)
+    main(args.pr_title, args.repo, args.pr_number, args.file_base_url, args.added_files_str, args.modified_files_str, args.token)
