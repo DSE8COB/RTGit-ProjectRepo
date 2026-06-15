@@ -79,7 +79,8 @@ jobs:
           python script/task_validation.py \
             '${{ toJson(github.event.pull_request) }}' \
             '${{ github.repository }}' \
-            '${{ github.event.pull_request.number }}'
+            '${{ github.event.pull_request.number }}' \
+            '${{ needs.detect-task.outputs.task_id }}'
 
   create-review-task:
     name: Create Review Task
