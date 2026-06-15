@@ -41,11 +41,12 @@ jobs:
             const regex = /✅\s*Review task created successfully:\s*(TASK\d+)/i;
 
             let taskId = "";
-            for (const comment of comments) {
+            for (const comment of comments.reverse()) {
               const body = comment.body || "";
               const match = body.match(regex);
               if (match) {
                 taskId = match[1];
+                break;
               }
             }
 
