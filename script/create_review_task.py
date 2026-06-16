@@ -107,12 +107,12 @@ def main():
         "taskName": pr_title,
         "remarks": "Created automatically from GitHub PR",
         "checklist": {
-            "checklistIds": [],
+            "Ids": [],
             "tags": ["newTag", "addednewtag1"],
             "usage": "AND"
         },
         "reviewType": {
-            "reviewTypeIds": [],
+            "Ids": [],
             "tags": ["T1", "testtags_list"],
             "usage": "OR"
         },
@@ -123,7 +123,8 @@ def main():
         "reviewRoles": reviewers,
         "taskLinks": [
             pr_url
-        ]
+        ],
+        "gitOneReviewerApprovalSufficient": "Y"
     }
 
     print("Payload:")
