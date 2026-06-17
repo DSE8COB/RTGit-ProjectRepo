@@ -1,4 +1,3 @@
-
 name: Review workflow
 
 on:
@@ -111,3 +110,33 @@ jobs:
             '${{ toJson(github.event.pull_request) }}' \
             '${{ github.repository }}' \
             '${{ github.event.pull_request.number }}'
+
+  reviewtool-merge-gate:
+    name: ReviewTool Merge Gate
+    needs:
+      - detect-task
+      - validation-check
+      - create-review-task
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Evaluate ReviewTool flow
+        run: |
+          echo "found=${{ needs.detect-task.outputs.found }}"
+          echo "validation_result=${{ needs.validation-check.result }}"
+          echo "create_result=${{ needs.create-review-task.result }}"
+
+          if [ "${{ needs.detect-task.outputs.found }}" = "true" ]; then
+            if [ "${{ needs.validation-check.result }}" = "success" ]; then
+              echo "ReviewTool validation passed."
+              exit 0
+            else
+              echo "ReviewTool validation did not pass."
+              exit 1
+            fi
+          else
+            echo "Review task was created in this run, but validation was not executed yet."
+            echo "Trigger another PR event (for example push/synchronize or review_requested) so validation runs."
+            exit 1
+          fi
