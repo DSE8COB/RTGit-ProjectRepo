@@ -112,24 +112,24 @@ jobs:
             '${{ github.repository }}' \
             '${{ github.event.pull_request.number }}'
             
-final-reviewtool-gate:
-  name: ReviewTool Final Gate
-  needs: [detect-task, validation-check, create-review-task]
-  if: ${{ always() }}
-  runs-on: ubuntu-latest
-  steps:
-    - name: Decide final result
-      run: |
-        echo "detect found = ${{ needs.detect-task.outputs.found }}"
-        echo "validation result = ${{ needs.validation-check.result }}"
-        echo "create result = ${{ needs.create-review-task.result }}"
-
-        if [ "${{ needs.detect-task.outputs.found }}" = "true" ]; then
-          if [ "${{ needs.validation-check.result }}" != "success" ]; then
-            echo "Validation was expected but did not succeed"
+  final-reviewtool-gate:
+    name: ReviewTool Final Gate
+    needs: [detect-task, validation-check, create-review-task]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide final result
+        run: |
+          echo "detect found = ${{ needs.detect-task.outputs.found }}"
+          echo "validation result = ${{ needs.validation-check.result }}"
+          echo "create result = ${{ needs.create-review-task.result }}"
+  
+          if [ "${{ needs.detect-task.outputs.found }}" = "true" ]; then
+            if [ "${{ needs.validation-check.result }}" != "success" ]; then
+              echo "Validation was expected but did not succeed"
+              exit 1
+            fi
+          else
+            echo "Task was just created in this run"
             exit 1
           fi
-        else
-          echo "Task was just created in this run"
-          exit 1
-        fi
