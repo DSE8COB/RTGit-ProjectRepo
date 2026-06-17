@@ -5,7 +5,7 @@
  *  Prints "Hello, World". By tradition, this is everyone's first program.
  *
  *  % java HelloWorld
- *  Hello, World
+ *  Hello, World sfds
  *
  *  These 17 lines of text are comments. They are not part of the program;
  *  they serve to remind us about its properties. The first two lines tell
