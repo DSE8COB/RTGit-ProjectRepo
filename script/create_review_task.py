@@ -4,7 +4,7 @@ import sys
 import requests
 
 CREATE_REVIEW_URL = (
-    "https://ews-emea.api.bosch.com/reviewtool/create-task/d/v1/createReview/task/bbm/14"
+    "https://ews-emea.api.bosch.com/reviewtool/create-task/t/v1/createReview/task/bbm/14"
 )
 
 
