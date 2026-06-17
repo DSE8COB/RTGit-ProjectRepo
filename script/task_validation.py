@@ -77,7 +77,7 @@ try:
 
     elif phase_name.lower() == "inprogress":
         print(f"ℹ️ Task {task_id} is still in progress")
-        sys.exit(0)
+        sys.exit(1)
 
     else:
         print(f"ℹ️ Task {task_id} is in status: {phase_name}")
