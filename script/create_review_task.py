@@ -108,12 +108,12 @@ def main():
         "remarks": "Created automatically from GitHub PR",
         "checklist": {
             "Ids": [],
-            "tags": ["newTag", "addednewtag1"],
+            "tags": ["process"],
             "usage": "AND"
         },
         "reviewType": {
             "Ids": [],
-            "tags": ["T1", "testtags_list"],
+            "tags": ["process"],
             "usage": "OR"
         },
         "author": {
