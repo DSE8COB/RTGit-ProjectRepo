@@ -4,7 +4,7 @@
  *
  *  Prints "Hello, World". By tradition, this is everyone's first program.
  *
- *  % java HelloWorld change1 - chagne 2
+ *  % java HelloWorld change1 - chagne 2 - change 3
  *  Hello, World
  *
  *  These 17 lines of text are comments. They are not part of the program;
