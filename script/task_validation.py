@@ -76,7 +76,7 @@ try:
         sys.exit(0)
 
     elif phase_name.lower() == "inprogress":
-        print(f"ℹ️ Task {task_id} is still in progress")
+        print(f"ℹ️ Task {task_id} is still in progress - please close the task")
         sys.exit(1)
 
     else:
