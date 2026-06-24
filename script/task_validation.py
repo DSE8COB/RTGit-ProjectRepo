@@ -10,7 +10,7 @@ task_id = sys.argv[4]
 
 github_token = os.getenv("GITHUB_TOKEN")
 
-url = "https://ews-emea.api.bosch.com/reviewtool/task-status/t/v1/reviewdetails/task/external/getAllTaskDetails"
+url = "https://ews-emea.api.bosch.com/reviewtool/task-status/d/v1/reviewdetails/task/external/phase"
 
 headers = {
     "KeyId": "9bc39618-a714-4d87-aa6a-c4fd4985d9ba",
