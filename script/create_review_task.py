@@ -63,6 +63,7 @@ def main():
 
     pr_title = pr["title"]
     pr_url = pr["html_url"]
+    pr_description = pr.get("body") or ""
 
     author = pr["user"]["login"]
 
@@ -105,7 +106,7 @@ def main():
 
     payload = {
         "taskName": pr_title,
-        "remarks": "Created automatically from GitHub PR",
+        "remarks": pr_description,
         "checklist": {
             "Ids": [],
             "tags": ["process"],
@@ -124,7 +125,10 @@ def main():
         "taskLinks": [
             pr_url
         ],
-        "gitOneReviewerApprovalSufficient": "Y"
+        "gitOneReviewerApprovalSufficient": "Y",
+        "checkListAsReference": "N",
+        "automateConclude": "N",
+        "automateClosure": "N"
     }
 
     print("Payload:")
